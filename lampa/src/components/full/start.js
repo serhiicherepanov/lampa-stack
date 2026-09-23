@@ -490,6 +490,11 @@ function create(data, params = {}){
 
         
         play.unbind().on('hover:enter',(e)=>{
+            // если доступны торренты, сразу открываем их без выбора источника
+            let torrent = html.find('.buttons--container > .view--torrent').not('.hide')
+
+            if(torrent.length) return torrent.trigger('hover:enter')
+
             priority = Storage.get('full_btn_priority','') + ''
 
             btns = html.find('.buttons--container > .full-start__button').not('.hide').filter(function(){

@@ -20,6 +20,9 @@ let activi = false
 function init(){
     html = Template.get('head')
 
+    // скрываем промо CUB Premium
+    html.find('.open--premium').remove()
+
     html.find('.head__actions').prepend(Processing.render())
 
     Utils.time(html)
