@@ -23,6 +23,21 @@ docker compose build
 docker compose up -d
 ```
 
+## Default torrent parser
+
+The parser is baked into the Lampa build (users can still change it in *Settings → Parser*):
+
+| Variable              | Meaning                                                        |
+|-----------------------|----------------------------------------------------------------|
+| `PARSER_TORRENT_TYPE` | `jackett`, `prowlarr` or `torrserver` (default `torrserver`)   |
+| `PARSER_URL`          | Jackett/Prowlarr URL (default `https://$JACKETT_DOMAIN`)       |
+| `PARSER_APIKEY`       | Jackett/Prowlarr API key (default `$JACKETT_APIKEY`)           |
+
+Values are applied in the browser on the first start after they change, so rebuild after editing `.env`:
+```bash
+docker compose build lampa && docker compose up -d
+```
+
 ## Behind Cloudflare (or another reverse proxy)
 
 Traefik trusts `X-Forwarded-*` headers only from IPs in `TRAEFIK_TRUSTED_IPS`

@@ -52,14 +52,14 @@ npm test        # vitest (spec/)
 
 `build/`, `dest/` and `node_modules/` are gitignored.
 
-Deployment-specific values are baked into the frontend **at build time**: source files contain `%%PLACEHOLDER%%` tokens, and `build_web()` in `gulpfile.js` replaces them in the bundled `app.js` from `process.env` (with defaults). Supported placeholders:
+Deployment-specific values are baked into the frontend **at build time**. All `%%PLACEHOLDER%%` tokens live in one module, `lampa/src/utils/build_env.js`, and `build_web()` in `gulpfile.js` replaces them in the bundled `app.js` from `process.env` (with defaults). Code reads them only via `BuildEnv.get(name)` / `BuildEnv.url(name)`.
 
-`LAMPA_DOMAIN`, `TORRSERVER_DOMAIN`, `TORRSERVER_DOMAIN_TWO`, `TORRSERVER_LOGIN`, `TORRSERVER_PASSWORD`, `PARSER_TORRENT_TYPE`, `JACKETT_DOMAIN`, `JACKETT_APIKEY`.
+**Never use a `%%PLACEHOLDER%%` literal directly in code.** Replacement runs *after* rollup, and rollup constant-folds expressions over the literal placeholder string (e.g. `'%%X%%' ? a : b` is always `a`, `'%%X%%' == 'jackett'` is always false and the branch is dropped). The dynamic lookup in `build_env.js` prevents that.
 
-They are used in `src/app.js`, `src/components/settings/params.js` and `src/interaction/torserver.js` to pre-fill user settings (only when the user has not set them yet).
+Current values: `TORRSERVER_DOMAIN`, `TORRSERVER_DOMAIN_TWO`, `TORRSERVER_LOGIN`, `TORRSERVER_PASSWORD` (pre-filled once, when `torrserver_url` is empty), and `PARSER_TORRENT_TYPE`, `PARSER_URL`, `PARSER_APIKEY` (applied in `src/app.js` on start whenever their combination differs from the last applied one, stored in `parser_env_applied`; so a rebuild with new values overrides the user's parser settings once, and manual changes survive otherwise). `PARSER_URL`/`PARSER_APIKEY` default to `https://$JACKETT_DOMAIN` / `$JACKETT_APIKEY` and are written to `jackett_*` or `prowlarr_*` depending on the type.
 
 To add a new build-time setting, change all of:
-1. the placeholder in `lampa/src/...`;
+1. `lampa/src/utils/build_env.js` and the code that reads it via `BuildEnv`;
 2. the `replace()` chain and default in `build_web()` in `lampa/gulpfile.js`;
 3. an `ARG` in `lampa/Dockerfile`;
 4. `build.args` of the `lampa` service in `docker-compose.yml`;

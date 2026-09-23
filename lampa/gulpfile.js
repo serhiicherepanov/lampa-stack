@@ -155,8 +155,10 @@ function build_web(done){
         const TORRSERVER_LOGIN = process.env.TORRSERVER_LOGIN || '';
         const TORRSERVER_PASSWORD = process.env.TORRSERVER_PASSWORD || '';
         const PARSER_TORRENT_TYPE = process.env.PARSER_TORRENT_TYPE || 'torrserver';
-        const JACKETT_DOMAIN = process.env.JACKETT_DOMAIN || 'jackett.example.com';
-        const JACKETT_APIKEY = process.env.JACKETT_APIKEY || 'jackett';
+        const JACKETT_DOMAIN = process.env.JACKETT_DOMAIN || '';
+        const JACKETT_APIKEY = process.env.JACKETT_APIKEY || '';
+        const PARSER_URL = process.env.PARSER_URL || (JACKETT_DOMAIN ? 'https://' + JACKETT_DOMAIN : '');
+        const PARSER_APIKEY = process.env.PARSER_APIKEY || JACKETT_APIKEY;
 
         src([dstFolder+'app.js'])
             .pipe(replace('%%LAMPA_DOMAIN%%', LAMPA_DOMAIN))
@@ -165,8 +167,8 @@ function build_web(done){
             .pipe(replace('%%TORRSERVER_LOGIN%%', TORRSERVER_LOGIN))
             .pipe(replace('%%TORRSERVER_PASSWORD%%', TORRSERVER_PASSWORD))
             .pipe(replace('%%PARSER_TORRENT_TYPE%%', PARSER_TORRENT_TYPE))
-            .pipe(replace('%%JACKETT_DOMAIN%%', JACKETT_DOMAIN))
-            .pipe(replace('%%JACKETT_APIKEY%%', JACKETT_APIKEY))
+            .pipe(replace('%%PARSER_URL%%', PARSER_URL))
+            .pipe(replace('%%PARSER_APIKEY%%', PARSER_APIKEY))
             .pipe(dest(bulFolder+'web/'));
 
         fs.readdirSync(dstFolder).filter(function (file) {

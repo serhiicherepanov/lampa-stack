@@ -65,6 +65,9 @@ services:
       context: lampa
       args:
         TORRSERVER_DOMAIN: "${TORRSERVER_DOMAIN}"
+        PARSER_TORRENT_TYPE: "${PARSER_TORRENT_TYPE:-torrserver}"
+        PARSER_URL: "${PARSER_URL:-}"
+        PARSER_APIKEY: "${PARSER_APIKEY:-}"
         JACKETT_DOMAIN: "${JACKETT_DOMAIN:-}"
         JACKETT_APIKEY: "${JACKETT_APIKEY:-}"
     restart: always

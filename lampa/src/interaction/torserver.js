@@ -1,6 +1,7 @@
 import Storage from '../utils/storage'
 import Utils from '../utils/math'
 import Request from '../utils/reguest'
+import BuildEnv from '../utils/build_env'
 import Template from './template'
 import Controller from './controller'
 import Modal from './modal'
@@ -17,8 +18,8 @@ function url(){
 }
 
 function ip(){
-    let one = Storage.get('torrserver_url', '%%TORRSERVER_DOMAIN%%' ? 'https://%%TORRSERVER_DOMAIN%%' : '')
-    let two = Storage.get('torrserver_url_two', '%%TORRSERVER_DOMAIN_TWO%%' ? 'https://%%TORRSERVER_DOMAIN_TWO%%' : '')
+    let one = Storage.get('torrserver_url', BuildEnv.url('torrserver_domain'))
+    let two = Storage.get('torrserver_url_two', BuildEnv.url('torrserver_domain_two'))
 
     return Storage.field('torrserver_use_link') == 'two' ? two || one : one || two
 }

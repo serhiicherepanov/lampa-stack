@@ -91,6 +91,7 @@ import VPN from './utils/vpn'
 import Processing from './interaction/processing'
 import ParentalControl from './interaction/parental_control'
 import Personal from './utils/personal'
+import BuildEnv from './utils/build_env'
 
 /**
  * Настройки движка
@@ -435,9 +436,21 @@ function startApp(){
 
     Storage.set('account_password','')
 
-    /** Чтоб не писали по 100 раз */
+    /** Парсер по умолчанию из переменных окружения при сборке, применяем заново только если они изменились */
 
-    Storage.set('parser_torrent_type', Storage.get('parser_torrent_type') || '%%PARSER_TORRENT_TYPE%%')
+    let parser_type = BuildEnv.get('parser_torrent_type')
+    let parser_env  = [parser_type, BuildEnv.get('parser_url'), BuildEnv.get('parser_apikey')].join('|')
+
+    if(parser_type && Storage.get('parser_env_applied', '') !== parser_env){
+        Storage.set('parser_torrent_type', parser_type)
+
+        if(parser_type == 'jackett' || parser_type == 'prowlarr'){
+            if(BuildEnv.get('parser_url')) Storage.set(parser_type + '_url', BuildEnv.get('parser_url'))
+            if(BuildEnv.get('parser_apikey')) Storage.set(parser_type + '_key', BuildEnv.get('parser_apikey'))
+        }
+
+        Storage.set('parser_env_applied', parser_env)
+    }
 
     /** Инфа */
 

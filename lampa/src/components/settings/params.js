@@ -6,6 +6,7 @@ import Select from '../../interaction/select'
 import Controller from '../../interaction/controller'
 import Subscribe from '../../utils/subscribe'
 import Lang from '../../utils/lang'
+import BuildEnv from '../../utils/build_env'
 
 let values   = {}
 let defaults = {}
@@ -226,14 +227,9 @@ function init(){
     if(Arrays.getKeys(selector).indexOf(Storage.get('parse_lang', 'df')) == -1) Storage.set('parse_lang', 'df_year')
 
     if (!Storage.get('torrserver_url', '')) {
-        Storage.set('torrserver_url', '%%TORRSERVER_DOMAIN%%' ? 'https://%%TORRSERVER_DOMAIN%%' : '');
-        Storage.set('torrserver_login', '%%TORRSERVER_LOGIN%%')
-        Storage.set('torrserver_password', '%%TORRSERVER_PASSWORD%%')
-    }
-
-    if (!Storage.get('jackett_key', '')) {
-        Storage.set('jackett_url', 'https://%%JACKETT_DOMAIN%%')
-        Storage.set('jackett_key', '%%JACKETT_APIKEY%%')
+        Storage.set('torrserver_url', BuildEnv.url('torrserver_domain'))
+        Storage.set('torrserver_login', BuildEnv.get('torrserver_login'))
+        Storage.set('torrserver_password', BuildEnv.get('torrserver_password'))
     }
 
     select('parse_lang',selector,'df')
