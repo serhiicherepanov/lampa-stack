@@ -76,7 +76,7 @@ Note: the Docker build only receives the variables listed under `build.args` in 
 
 ## Traefik notes
 
-- Every router is attached to both entrypoints: `unsecure` (:80) and `default` (:443, TLS, Let's Encrypt resolver `default` via HTTP challenge on :80).
+- Every router is attached to both entrypoints: `unsecure` (:80) and `default` (:443, TLS, Let's Encrypt resolver `default` via HTTP challenge on :80, account email from `LETSENCRYPT_EMAIL`).
 - HTTP→HTTPS redirect is the `https-redirect@file` middleware (`traefik/traefik.d/redirect.toml`), listed first on every router. It honours `X-Forwarded-Proto`, which Traefik keeps only from `forwardedHeaders.trustedIPs` (env `TRAEFIK_TRUSTED_IPS`, defaults to Cloudflare ranges). This is what prevents the redirect loop behind Cloudflare in "Flexible" SSL mode.
 - Do **not** switch back to entrypoint-level redirect (`entrypoints.unsecure.http.redirections`) or entrypoint `http.middlewares`: the former ignores trusted proxies, and the latter is also applied to the ACME challenge router and breaks certificate issuance.
 - CORS is configured per service with header middlewares; torrserver and jackett restrict origins to `LAMPA_DOMAIN` and its subdomains.
