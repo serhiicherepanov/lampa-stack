@@ -74,6 +74,8 @@ services:
         PARSER_APIKEY: "${PARSER_APIKEY:-}"
         JACKETT_DOMAIN: "${JACKETT_DOMAIN:-}"
         JACKETT_APIKEY: "${JACKETT_APIKEY:-}"
+        PROWLARR_DOMAIN: "${PROWLARR_DOMAIN:-}"
+        PROWLARR_APIKEY: "${PROWLARR_APIKEY:-}"
     restart: always
     logging:
       driver: "json-file"
@@ -171,6 +173,45 @@ services:
       - "traefik.http.middlewares.jackett-cors.headers.accessControlAllowCredentials=true"
       - "traefik.http.middlewares.jackett-cors.headers.addVaryHeader=true"
 
+  prowlarr:
+    container_name: prowlarr
+    profiles: [prowlarr]
+    image: lscr.io/linuxserver/prowlarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Tbilisi
+      # Empty value keeps the key Prowlarr generated in config.xml
+      - PROWLARR__AUTH__APIKEY=${PROWLARR_APIKEY:-}
+    volumes:
+      - './data/prowlarr/config:/config'
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    healthcheck:
+      test: /bin/bash -c "</dev/tcp/localhost/9696"
+      start_period: 60s
+      interval: 5s
+    networks:
+      - "default"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.entrypoints=unsecure,default"
+      - "traefik.http.routers.prowlarr.rule=Host(`${PROWLARR_DOMAIN:-}`)"
+      - "traefik.http.routers.prowlarr.middlewares=https-redirect@file,prowlarr-cors@docker,gzip@file"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+      - "traefik.http.middlewares.prowlarr-cors.headers.accessControlAllowOriginListRegex=${LAMPA_DOMAIN}|.*\\.${LAMPA_DOMAIN}|localhost"
+      - "traefik.http.middlewares.prowlarr-cors.headers.accessControlAllowMethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.prowlarr-cors.headers.accessControlAllowHeaders=Content-Type,Authorization,X-Requested-With,Accept"
+      - "traefik.http.middlewares.prowlarr-cors.headers.accessControlExposeHeaders=*"
+      - "traefik.http.middlewares.prowlarr-cors.headers.accessControlAllowCredentials=true"
+      - "traefik.http.middlewares.prowlarr-cors.headers.addVaryHeader=true"
+
 networks:
   default:
     name: "${NETWORK_NAME:-lampa}"
+    driver_opts:
+      # Below Docker's 1500 so traffic survives VPN tunnels (NordVPN/WireGuard) on the host
+      com.docker.network.driver.mtu: "${NETWORK_MTU:-1380}"

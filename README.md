@@ -16,12 +16,21 @@ export COMPOSE_PROFILES=standalone
 docker compose build
 docker compose up -d
 ```
-Start docker containers with **jackett** parser and container
+Start docker containers with **jackett** parser and container (`cp .env.jackett.dist .env`)
 ```bash
 export COMPOSE_PROFILES=standalone,jackett
 docker compose build
 docker compose up -d
 ```
+Start docker containers with **prowlarr** parser and container (`cp .env.prowlarr.dist .env`)
+```bash
+export COMPOSE_PROFILES=standalone,prowlarr
+docker compose build
+docker compose up -d
+```
+Open `https://$PROWLARR_DOMAIN`, set up Prowlarr authentication and add indexers.
+The API key is taken from `PROWLARR_APIKEY`; if it is empty, copy the generated one from
+*Settings → General* into `PARSER_APIKEY` and rebuild lampa.
 
 ## Default torrent parser
 
@@ -30,8 +39,8 @@ The parser is baked into the Lampa build. Non-empty build values always win: the
 | Variable              | Meaning                                                        |
 |-----------------------|----------------------------------------------------------------|
 | `PARSER_TORRENT_TYPE` | `jackett`, `prowlarr` or `torrserver` (default `torrserver`)   |
-| `PARSER_URL`          | Jackett/Prowlarr URL (default `https://$JACKETT_DOMAIN`)       |
-| `PARSER_APIKEY`       | Jackett/Prowlarr API key (default `$JACKETT_APIKEY`)           |
+| `PARSER_URL`          | Jackett/Prowlarr URL (default `https://$JACKETT_DOMAIN` or `https://$PROWLARR_DOMAIN`, by type) |
+| `PARSER_APIKEY`       | Jackett/Prowlarr API key (default `$JACKETT_APIKEY` or `$PROWLARR_APIKEY`, by type)          |
 
 The same applies to `TORRSERVER_DOMAIN`, `TORRSERVER_DOMAIN_TWO`, `TORRSERVER_LOGIN` and `TORRSERVER_PASSWORD`
 (when a login is set, TorrServer auth is enabled and hidden from settings). Values are baked in, so rebuild after editing `.env`:

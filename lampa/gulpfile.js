@@ -157,8 +157,11 @@ function build_web(done){
         const PARSER_TORRENT_TYPE = process.env.PARSER_TORRENT_TYPE || 'torrserver';
         const JACKETT_DOMAIN = process.env.JACKETT_DOMAIN || '';
         const JACKETT_APIKEY = process.env.JACKETT_APIKEY || '';
-        const PARSER_URL = process.env.PARSER_URL || (JACKETT_DOMAIN ? 'https://' + JACKETT_DOMAIN : '');
-        const PARSER_APIKEY = process.env.PARSER_APIKEY || JACKETT_APIKEY;
+        const PROWLARR_DOMAIN = process.env.PROWLARR_DOMAIN || '';
+        const PROWLARR_APIKEY = process.env.PROWLARR_APIKEY || '';
+        const PARSER_DOMAIN = PARSER_TORRENT_TYPE == 'prowlarr' ? PROWLARR_DOMAIN : JACKETT_DOMAIN;
+        const PARSER_URL = process.env.PARSER_URL || (PARSER_DOMAIN ? 'https://' + PARSER_DOMAIN : '');
+        const PARSER_APIKEY = process.env.PARSER_APIKEY || (PARSER_TORRENT_TYPE == 'prowlarr' ? PROWLARR_APIKEY : JACKETT_APIKEY);
 
         src([dstFolder+'app.js'])
             .pipe(replace('%%LAMPA_DOMAIN%%', LAMPA_DOMAIN))
