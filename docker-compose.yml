@@ -64,6 +64,7 @@ services:
     build:
       context: lampa
       args:
+        NPM_REGISTRY: "${NPM_REGISTRY:-https://registry.npmjs.org/}"
         TORRSERVER_DOMAIN: "${TORRSERVER_DOMAIN}"
         TORRSERVER_DOMAIN_TWO: "${TORRSERVER_DOMAIN_TWO:-}"
         TORRSERVER_LOGIN: "${TORRSERVER_LOGIN:-}"

@@ -50,7 +50,7 @@ npm start       # dev server with watch + browser-sync on http://localhost:3000
 npm test        # vitest (spec/)
 ```
 
-`build/`, `dest/` and `node_modules/` are gitignored.
+`build/`, `dest/` and `node_modules/` are gitignored (and in `lampa/.dockerignore`). The Docker build installs dependencies with `npm ci` in a separate cached layer (npm cache mount, fetch retries, registry overridable via `NPM_REGISTRY`), so keep `package-lock.json` in sync with `package.json` and declare build-setting `ARG`s after the install step.
 
 Deployment-specific values are baked into the frontend **at build time**. All `%%PLACEHOLDER%%` tokens live in one module, `lampa/src/utils/build_env.js`, and `build_web()` in `gulpfile.js` replaces them in the bundled `app.js` from `process.env` (with defaults). Code reads them only via `BuildEnv.get(name)` / `BuildEnv.url(name)`.
 
