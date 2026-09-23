@@ -1,0 +1,6 @@
+# Redirects plain HTTP to HTTPS. Uses X-Forwarded-Proto when the request comes from
+# a trusted proxy (entrypoint forwardedHeaders.trustedIPs), so requests that already
+# arrived at Cloudflare over HTTPS are passed through instead of redirected in a loop.
+[http.middlewares.https-redirect.redirectScheme]
+  scheme = "https"
+  permanent = true

@@ -12,9 +12,11 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--providers.file.directory=/traefik.d"
       - "--entrypoints.unsecure.address=:80"
-      - "--entrypoints.unsecure.http.redirections.entryPoint.to=default"
+      - "--entrypoints.unsecure.forwardedHeaders.trustedIPs=${TRAEFIK_TRUSTED_IPS:-173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32}"
       - "--entrypoints.default.address=:443"
+      - "--entrypoints.default.forwardedHeaders.trustedIPs=${TRAEFIK_TRUSTED_IPS:-173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32}"
       - "--entrypoints.default.http.tls=true"
+      - "--entrypoints.default.http.tls.certresolver=default"
       - "--certificatesresolvers.default.acme.httpchallenge=true"
       - "--certificatesresolvers.default.acme.httpchallenge.entrypoint=unsecure"
       - "--certificatesresolvers.default.acme.storage=/letsencrypt/acme.json"
@@ -29,14 +31,14 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.traefikapi.rule=Host(`${LAMPA_DOMAIN}`) && PathPrefix(`/api/`) && HeadersRegexp(`Referer`, `^https?:\/\/.+\/traefik\/dashboard\/`)'
-      - 'traefik.http.routers.traefikapi.entrypoints=default'
+      - 'traefik.http.routers.traefikapi.entrypoints=unsecure,default'
       - 'traefik.http.routers.traefikapi.service=api@internal'
-      - 'traefik.http.routers.traefikapi.middlewares=traefik-auth'
+      - 'traefik.http.routers.traefikapi.middlewares=https-redirect@file,traefik-auth'
       - 'traefik.http.routers.traefikdashboard.rule=Host(`${LAMPA_DOMAIN}`) && PathPrefix(`/traefik/dashboard/`)'
       - 'traefik.http.routers.traefikdashboard.priority=500'
-      - 'traefik.http.routers.traefikdashboard.entrypoints=default'
+      - 'traefik.http.routers.traefikdashboard.entrypoints=unsecure,default'
       - 'traefik.http.routers.traefikdashboard.service=api@internal'
-      - 'traefik.http.routers.traefikdashboard.middlewares=traefik-auth,traefik-stripprefix'
+      - 'traefik.http.routers.traefikdashboard.middlewares=https-redirect@file,traefik-auth,traefik-stripprefix'
       - 'traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik'
       - 'traefik.http.middlewares.traefik-auth.basicauth.users=admin:{SHA}0tTNr469Z7oY3fDRwNoUXE2vTBw='
     depends_on:
@@ -76,9 +78,9 @@ services:
       - "default"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.lampa.entrypoints=default"
+      - "traefik.http.routers.lampa.entrypoints=unsecure,default"
       - "traefik.http.routers.lampa.rule=Host(`${LAMPA_DOMAIN}`)"
-      - "traefik.http.routers.lampa.middlewares=lampa-cors@docker,gzip@file"
+      - "traefik.http.routers.lampa.middlewares=https-redirect@file,lampa-cors@docker,gzip@file"
       - "traefik.http.services.lampa.loadbalancer.server.port=80"
       - "traefik.http.middlewares.lampa-cors.headers.accessControlAllowOriginList=*"
       - "traefik.http.middlewares.lampa-cors.headers.accessControlAllowMethods=GET,POST,PUT,DELETE,OPTIONS"
@@ -114,10 +116,10 @@ services:
       - "default"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.torrserver.entrypoints=default"
+      - "traefik.http.routers.torrserver.entrypoints=unsecure,default"
       - "traefik.http.routers.torrserver.rule=Host(`${TORRSERVER_DOMAIN}`)"
       - "traefik.http.services.torrserver.loadbalancer.server.port=80"
-      - "traefik.http.routers.torrserver.middlewares=torrserver-cors"
+      - "traefik.http.routers.torrserver.middlewares=https-redirect@file,torrserver-cors"
       - "traefik.http.middlewares.torrserver-cors.headers.accessControlAllowOriginListRegex=${LAMPA_DOMAIN}|.*\\.${LAMPA_DOMAIN}|localhost"
       - "traefik.http.middlewares.torrserver-cors.headers.accessControlAllowMethods=GET,POST,PUT,DELETE,OPTIONS"
       - "traefik.http.middlewares.torrserver-cors.headers.accessControlAllowHeaders=Content-Type,Authorization,X-Requested-With,Accept"
@@ -149,9 +151,9 @@ services:
       - "default"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jackett.entrypoints=default"
+      - "traefik.http.routers.jackett.entrypoints=unsecure,default"
       - "traefik.http.routers.jackett.rule=Host(`${JACKETT_DOMAIN:-}`)"
-      - "traefik.http.routers.jackett.middlewares=jackett-cors@docker,gzip@file"
+      - "traefik.http.routers.jackett.middlewares=https-redirect@file,jackett-cors@docker,gzip@file"
       - "traefik.http.services.jackett.loadbalancer.server.port=9117"
       - "traefik.http.middlewares.jackett-cors.headers.accessControlAllowOriginListRegex=${LAMPA_DOMAIN}|.*\\.${LAMPA_DOMAIN}|localhost"
       - "traefik.http.middlewares.jackett-cors.headers.accessControlAllowMethods=GET,POST,PUT,DELETE,OPTIONS"
