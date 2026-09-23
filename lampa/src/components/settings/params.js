@@ -15,6 +15,31 @@ let listener = Subscribe()
 /**
  * Запуск
  */
+/**
+ * Значения заданные при сборке (переменные окружения) всегда в приоритете и перезаписывают настройки пользователя
+ */
+function buildEnv(){
+    if(BuildEnv.get('torrserver_domain')) Storage.set('torrserver_url', BuildEnv.url('torrserver_domain'))
+    if(BuildEnv.get('torrserver_domain_two')) Storage.set('torrserver_url_two', BuildEnv.url('torrserver_domain_two'))
+
+    if(BuildEnv.get('torrserver_login')){
+        Storage.set('torrserver_auth', true)
+        Storage.set('torrserver_login', BuildEnv.get('torrserver_login'))
+        Storage.set('torrserver_password', BuildEnv.get('torrserver_password'))
+    }
+
+    let parser_type = BuildEnv.get('parser_torrent_type')
+
+    if(parser_type){
+        Storage.set('parser_torrent_type', parser_type)
+
+        if(parser_type == 'jackett' || parser_type == 'prowlarr'){
+            if(BuildEnv.get('parser_url')) Storage.set(parser_type + '_url', BuildEnv.get('parser_url'))
+            if(BuildEnv.get('parser_apikey')) Storage.set(parser_type + '_key', BuildEnv.get('parser_apikey'))
+        }
+    }
+}
+
 function init(){
     if(Platform.is('tizen')){
         select('player',{
@@ -226,11 +251,7 @@ function init(){
 
     if(Arrays.getKeys(selector).indexOf(Storage.get('parse_lang', 'df')) == -1) Storage.set('parse_lang', 'df_year')
 
-    if (!Storage.get('torrserver_url', '')) {
-        Storage.set('torrserver_url', BuildEnv.url('torrserver_domain'))
-        Storage.set('torrserver_login', BuildEnv.get('torrserver_login'))
-        Storage.set('torrserver_password', BuildEnv.get('torrserver_password'))
-    }
+    buildEnv()
 
     select('parse_lang',selector,'df')
 

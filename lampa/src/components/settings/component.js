@@ -9,6 +9,7 @@ import Api from './api'
 import Lang from '../../utils/lang'
 import Select from '../../interaction/select'
 import Cache from '../../utils/cache.js'
+import BuildEnv from '../../utils/build_env'
 
 function Component(name, component_params = {}){
     let scrl = new Scroll({mask: true, over:true, step: 200})
@@ -45,6 +46,12 @@ function Component(name, component_params = {}){
         }
 
         if(!window.lampa_settings.lang_use) comp.find('[data-name="light_version"]').prev().remove()
+
+        if(BuildEnv.get('torrserver_login')){
+            comp.find('[data-name="torrserver_auth"]').prev().remove()
+            comp.find('[data-name="torrserver_auth"]').remove()
+            comp.find('[data-parent="login"]').remove()
+        }
 
         scrl.render().find('.scroll__content').addClass('layer--wheight').data('mheight',$('.settings__head'))
 

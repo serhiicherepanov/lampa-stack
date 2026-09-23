@@ -25,7 +25,7 @@ docker compose up -d
 
 ## Default torrent parser
 
-The parser is baked into the Lampa build (users can still change it in *Settings → Parser*):
+The parser is baked into the Lampa build. Non-empty build values always win: they overwrite the user's settings on every app start.
 
 | Variable              | Meaning                                                        |
 |-----------------------|----------------------------------------------------------------|
@@ -33,7 +33,8 @@ The parser is baked into the Lampa build (users can still change it in *Settings
 | `PARSER_URL`          | Jackett/Prowlarr URL (default `https://$JACKETT_DOMAIN`)       |
 | `PARSER_APIKEY`       | Jackett/Prowlarr API key (default `$JACKETT_APIKEY`)           |
 
-Values are applied in the browser on the first start after they change, so rebuild after editing `.env`:
+The same applies to `TORRSERVER_DOMAIN`, `TORRSERVER_DOMAIN_TWO`, `TORRSERVER_LOGIN` and `TORRSERVER_PASSWORD`
+(when a login is set, TorrServer auth is enabled and hidden from settings). Values are baked in, so rebuild after editing `.env`:
 ```bash
 docker compose build lampa && docker compose up -d
 ```
