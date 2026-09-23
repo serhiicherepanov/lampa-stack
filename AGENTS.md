@@ -87,6 +87,7 @@ If the host runs a VPN client (e.g. NordVPN), outbound HTTPS from containers can
 - HTTP→HTTPS redirect is the `https-redirect@file` middleware (`traefik/traefik.d/redirect.toml`), listed first on every router. It honours `X-Forwarded-Proto`, which Traefik keeps only from `forwardedHeaders.trustedIPs` (env `TRAEFIK_TRUSTED_IPS`, defaults to Cloudflare ranges). This is what prevents the redirect loop behind Cloudflare in "Flexible" SSL mode.
 - Do **not** switch back to entrypoint-level redirect (`entrypoints.unsecure.http.redirections`) or entrypoint `http.middlewares`: the former ignores trusted proxies, and the latter is also applied to the ACME challenge router and breaks certificate issuance.
 - CORS is configured per service with header middlewares; torrserver, jackett and prowlarr restrict origins to `LAMPA_DOMAIN` and its subdomains.
+- Search engines are kept out by `lampa/public/robots.txt` (`Disallow: /`) and the `noindex@file` middleware (`X-Robots-Tag`, `traefik/traefik.d/noindex.toml`) on every service router.
 - `gzip@file` is intentionally **not** applied to torrserver (see commit `disable gzip for torrserver`); keep it that way.
 - The dashboard is at `https://$LAMPA_DOMAIN/traefik/dashboard/` behind basic auth defined in the labels.
 
