@@ -4,6 +4,7 @@ services:
     build: traefik
     profiles: [standalone]
     container_name: traefik
+    restart: always
     command:
       - "--ping=true"
       - "--log.level=INFO"
