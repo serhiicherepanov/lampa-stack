@@ -19,7 +19,7 @@ Each service is exposed by Traefik on its own domain (`LAMPA_DOMAIN`, `TORRSERVE
 
 - `docker-compose.yml` — the whole stack: routers, CORS middlewares, healthchecks, logging.
 - `.env.torrserver.dist`, `.env.jackett.dist` — env templates; copy one to `.env` (gitignored).
-- `traefik/traefik.d/` — Traefik file-provider config (e.g. the `gzip@file` middleware).
+- `traefik/traefik.d/` — Traefik file-provider config (`gzip@file`, `https-redirect@file`); bind-mounted into the container, so edits apply without rebuilding (Traefik watches the directory).
 - `data/` — bind-mounted runtime state. Only seed configs are tracked (`torrserver/config/settings.json`, `jackett/config/Jackett/ServerConfig.json`); everything else is ignored via per-directory `.gitignore`. Never commit certificates (`data/traefik/letsencrypt/`), torrents or generated config.
 - `lampa/` — vendored Lampa source (upstream: yumata/lampa). See below.
 
