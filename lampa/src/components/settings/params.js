@@ -253,7 +253,7 @@ function init(){
 
     buildEnv()
 
-    select('parse_lang',selector,'df')
+    select('parse_lang',selector,'df_year')
 
     select('tmdb_lang',Lang.codes(),'ru')
 
@@ -562,7 +562,7 @@ select('screensaver_time',{
 
 select('parse_lang',{
     'df': '#{settings_param_torrent_lang_orig}'
-},'df')
+},'df_year')
 
 select('parse_timeout',{
     '15': '15',
