@@ -4,6 +4,8 @@
     "ConnectionsLimit": 25,
     "PreloadCache": 18,
     "ReaderReadAHead": 93,
+    "RetrackersMode": 1,
+    "TorrentDisconnectTimeout": 30,
     "EnableRutorSearch": true
   }
 }
