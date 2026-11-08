@@ -107,7 +107,9 @@ services:
     environment:
       - TS_PORT=80
       - TS_DONTKILL=1
-      - TS_HTTPAUTH=0
+      # auth is enabled by torrserver/entrypoint.sh when TORRSERVER_LOGIN is set
+      - TORRSERVER_LOGIN=${TORRSERVER_LOGIN:-}
+      - TORRSERVER_PASSWORD=${TORRSERVER_PASSWORD:-}
       - TS_CONF_PATH=/config
       - TS_TORR_DIR=/torrents
     volumes:
@@ -128,21 +130,10 @@ services:
       - "default"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.torrserver.loadbalancer.server.port=80"
-      # Public router: only the endpoints Lampa needs (no auth). Everything else
-      # (/shutdown, /torrent/upload, /viewed, web UI assets, ...) falls through to
-      # the basic-auth router below.
       - "traefik.http.routers.torrserver.entrypoints=unsecure,default"
-      - "traefik.http.routers.torrserver.rule=Host(`${TORRSERVER_DOMAIN}`) && (Path(`/`) || PathPrefix(`/torrents`) || PathPrefix(`/cache`) || PathPrefix(`/settings`) || PathPrefix(`/stream`) || PathPrefix(`/download`) || PathPrefix(`/search`) || PathPrefix(`/echo`))"
-      - "traefik.http.routers.torrserver.priority=20"
-      - "traefik.http.routers.torrserver.service=torrserver"
+      - "traefik.http.routers.torrserver.rule=Host(`${TORRSERVER_DOMAIN}`)"
+      - "traefik.http.services.torrserver.loadbalancer.server.port=80"
       - "traefik.http.routers.torrserver.middlewares=https-redirect@file,noindex@file,torrserver-cors"
-      - "traefik.http.routers.torrserver-admin.entrypoints=unsecure,default"
-      - "traefik.http.routers.torrserver-admin.rule=Host(`${TORRSERVER_DOMAIN}`)"
-      - "traefik.http.routers.torrserver-admin.priority=10"
-      - "traefik.http.routers.torrserver-admin.service=torrserver"
-      - "traefik.http.routers.torrserver-admin.middlewares=https-redirect@file,noindex@file,torrserver-auth,torrserver-cors"
-      - 'traefik.http.middlewares.torrserver-auth.basicauth.users=craftorio:{SHA}QslP6HwCB4eelQJnB87ROafY50k='
       - "traefik.http.middlewares.torrserver-cors.headers.accessControlAllowOriginListRegex=${LAMPA_DOMAIN}|.*\\.${LAMPA_DOMAIN}|localhost"
       - "traefik.http.middlewares.torrserver-cors.headers.accessControlAllowMethods=GET,POST,PUT,DELETE,OPTIONS"
       - "traefik.http.middlewares.torrserver-cors.headers.accessControlAllowHeaders=Content-Type,Authorization,X-Requested-With,Accept"
