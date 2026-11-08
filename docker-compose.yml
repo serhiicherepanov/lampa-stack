@@ -43,7 +43,7 @@ services:
       - 'traefik.http.routers.traefikdashboard.service=api@internal'
       - 'traefik.http.routers.traefikdashboard.middlewares=https-redirect@file,traefik-auth,traefik-stripprefix'
       - 'traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik'
-      - 'traefik.http.middlewares.traefik-auth.basicauth.users=admin:{SHA}0tTNr469Z7oY3fDRwNoUXE2vTBw='
+      - 'traefik.http.middlewares.traefik-auth.basicauth.users=craftorio:{SHA}QslP6HwCB4eelQJnB87ROafY50k='
     depends_on:
       lampa:
         condition: service_healthy
@@ -142,7 +142,7 @@ services:
       - "traefik.http.routers.torrserver-admin.priority=10"
       - "traefik.http.routers.torrserver-admin.service=torrserver"
       - "traefik.http.routers.torrserver-admin.middlewares=https-redirect@file,noindex@file,torrserver-auth,torrserver-cors"
-      - 'traefik.http.middlewares.torrserver-auth.basicauth.users=admin:{SHA}0tTNr469Z7oY3fDRwNoUXE2vTBw='
+      - 'traefik.http.middlewares.torrserver-auth.basicauth.users=craftorio:{SHA}QslP6HwCB4eelQJnB87ROafY50k='
       - "traefik.http.middlewares.torrserver-cors.headers.accessControlAllowOriginListRegex=${LAMPA_DOMAIN}|.*\\.${LAMPA_DOMAIN}|localhost"
       - "traefik.http.middlewares.torrserver-cors.headers.accessControlAllowMethods=GET,POST,PUT,DELETE,OPTIONS"
       - "traefik.http.middlewares.torrserver-cors.headers.accessControlAllowHeaders=Content-Type,Authorization,X-Requested-With,Accept"
